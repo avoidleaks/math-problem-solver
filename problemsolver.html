@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry & Fraction Solver Suite</title>
+    <style>
+        :root {
+            --bg: #0f0e17;
+            --surface: #1a1a2e;
+            --surface2: #16213e;
+            --primary: #e94560;
+            --secondary: #0f3460;
+            --accent: #53d8fb;
+            --accent2: #f5a623;
+            --text: #eee;
+            --text-dim: #aaa;
+            --border: #2a2a4a;
+            --success: #4ecca3;
+            --radius: 12px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(233, 69, 96, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(83, 216, 251, 0.05) 0%, transparent 60%);
+        }
+        .container { width: 100%; max-width: 1200px; }
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+        .subtitle { text-align: center; color: var(--text-dim); margin-bottom: 20px; font-size: 1.05rem; }
+        .language-selector { display: flex; justify-content: flex-end; margin-bottom: 15px; gap: 8px; align-items: center; }
+        .language-selector select {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+        }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 25px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 6px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+        }
+        .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), #c0392b);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(233,69,96,0.35);
+        }
+        .tab-content { display: none; animation: fadeIn 0.35s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 850px) { .grid-2 { grid-template-columns: 1fr; } }
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+            margin-bottom: 20px;
+        }
+        .card h2 { font-size: 1.25rem; margin-bottom: 18px; color: var(--accent); letter-spacing: 0.3px; display: flex; align-items: center; gap: 10px; }
+        .card h2 .icon { font-size: 1.4rem; }
+        .input-group { margin-bottom: 14px; }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #c0392b); color: #fff; }
+        .btn-secondary { background: linear-gradient(135deg, var(--secondary), #1a1a4e); color: var(--text); border: 1px solid var(--border); }
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .result-item {
+            background: var(--surface2);
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .result-item .label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+        .result-item .value { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+        .result-item .value.warm { color: var(--accent2); }
+        .result-item .value.success { color: var(--success); }
+        .circle-svg-container { display: flex; justify-content: center; align-items: center; padding: 10px; }
+        .frac-visual { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+        .frac-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .frac-bar .filled {
+            background: linear-gradient(90deg, var(--primary), #ff6b6b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .frac-bar .empty {
+            background: var(--surface2);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .work-problem {
+            background: var(--surface2);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent2);
+            margin-bottom: 12px;
+        }
+        .formula-display {
+            font-family: 'Courier New', monospace;
+            background: #0a0a1a;
+            padding: 10px 14px;
+            border-radius: 6px;
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin: 8px 0;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .steps-container {
+            background: #0a0a1a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .steps-container .step-title {
+            color: var(--accent);
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-family: 'Segoe UI', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        .step-buttons { display: flex; gap: 6px; margin-top: 8px; }
+        .step-buttons button {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .unit-selector {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .unit-selector label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        .unit-selector select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 data-i18n="main_title">📐 Geometry & Fraction Solver Suite</h1>
+        <p class="subtitle" data-i18n="main_subtitle">Interactive Circle Geometry Engine · Fraction Visualizer · Work-Rate Problem Solver</p>
+
+        <div class="language-selector">
+            <label data-i18n="language_label" style="color:var(--text-dim);">Language:</label>
+            <select id="lang-select" onchange="changeLanguage(this.value)">
+                <option value="en" selected>English</option>
+                <option value="ka">ქართული (Georgian)</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="it">Italiano</option>
+                <option value="pt">Português</option>
+                <option value="ru">Русский</option>
+                <option value="zh">中文</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="ar">العربية</option>
+            </select>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="circle-tab" data-i18n="tab_circle">🔵 Circle Properties</button>
+            <button class="tab-btn" data-tab="fraction-tab" data-i18n="tab_fraction">🔢 Fraction Solver</button>
+            <button class="tab-btn" data-tab="workrate-tab" data-i18n="tab_workrate">⚡ Work-Rate Problems</button>
+        </div>
+
+        <!-- CIRCLE TAB -->
+        <div class="tab-content active" id="circle-tab">
+            <div class="grid-2">
+                <div class="card">
+                    <h2><span class="icon">📏</span> <span data-i18n="circle_inputs_title">Circle Inputs</span></h2>
+                    <div class="input-group">
+                        <label data-i18n="measurement_type">Measurement Type</label>
+                        <select id="circle-measure-type">
+                            <option value="radius" data-i18n="radius_option">Radius (r)</option>
+                            <option value="diameter" data-i18n="diameter_option">Diameter (d)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label id="circle-input-label" data-i18n="radius_label">Radius (r)</label>
+                        <input type="number" id="circle-input-value" value="5" min="0.01" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="arc_angle_label">Arc / Sector Angle (degrees) — optional</label>
+                        <input type="number" id="circle-angle" value="60" min="0" max="360" step="1">
+                    </div>
+                    <div class="angle-slider-container">
+                        <input type="range" id="angle-slider" min="0" max="360" value="60" step="1">
+                        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-dim);margin-top:4px;">
+                            <span>0°</span><span id="angle-display">60°</span><span>360°</span>
+                        </div>
+                    </div>
+                    <div class="step-buttons">
+                        <button onclick="setAngle(30)">30°</button>
+                        <button onclick="setAngle(60)">60°</button>
+                        <button onclick="setAngle(90)">90°</button>
+                        <button onclick="setAngle(120)">120°</button>
+                        <button onclick="setAngle(180)">180°</button>
+                        <button onclick="setAngle(270)">270°</button>
+                        <button onclick="setAngle(360)">360°</button>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;margin-top:14px;" onclick="calculateCircle()" data-i18n="calculate_btn">🔍 Calculate</button>
+                </div>
+                <div class="card">
+                    <h2><span class="icon">📊</span> <span data-i18n="results_title">Results</span></h2>
+                    <div class="circle-svg-container">
+                        <svg id="circle-svg" width="280" height="280" viewBox="0 0 280 280">
+                            <line x1="140" y1="10" x2="140" y2="270" stroke="#2a2a4a" stroke-width="0.5" stroke-dasharray="4,4"/>
+                            <line x1="10" y1="140" x2="270" y2="140" stroke="#2a2a4a" stroke-width="0.5" stroke-dasharray="4,4"/>
+                            <circle id="circle-main" cx="140" cy="140" r="100" fill="rgba(83,216,251,0.08)" stroke="var(--accent)" stroke-width="2.5"/>
+                            <path id="sector-fill" fill="rgba(233,69,96,0.25)" stroke="none"/>
+                            <line id="radius-line" x1="140" y1="140" x2="240" y2="140" stroke="#f5a623" stroke-width="2"/>
+                            <circle cx="140" cy="140" r="4" fill="#fff"/>
+                            <text id="label-r" x="190" y="132" fill="#f5a623" font-size="12" font-weight="600" text-anchor="middle">r</text>
+                            <text id="label-angle" x="185" y="120" fill="#e94560" font-size="11" font-weight="600" text-anchor="middle">60°</text>
+                        </svg>
+                    </div>
+                    <div class="result-grid">
+                        <div class="result-item"><div class="label" data-i18n="radius_res">Radius</div><div class="value" id="res-radius">—</div></div>
+                        <div class="result-item"><div class="label" data-i18n="diameter_res">Diameter</div><div class="value" id="res-diameter">—</div></div>
+                        <div class="result-item"><div class="label" data-i18n="circumference_res">Circumference</div><div class="value warm" id="res-circumference">—</div></div>
+                        <div class="result-item"><div class="label" data-i18n="area_res">Area</div><div class="value success" id="res-area">—</div></div>
+                        <div class="result-item"><div class="label" data-i18n="arc_length_res">Arc Length</div><div class="value warm" id="res-arc">—</div></div>
+                        <div class="result-item"><div class="label" data-i18n="sector_area_res">Sector Area</div><div class="value success" id="res-sector">—</div></div>
+                    </div>
+                    <div class="formula-display" id="formula-circle">A = πr² · C = 2πr</div>
+                </div>
+            </div>
+            <div class="card">
+                <h2><span class="icon">📝</span> <span data-i18n="steps_title">Step-by-Step Solution</span></h2>
+                <div class="steps-container" id="circle-steps"></div>
+            </div>
+        </div>
+
+        <!-- FRACTION TAB -->
+        <div class="tab-content" id="fraction-tab">
+            <div class="grid-2">
+                <div class="card">
+                    <h2><span class="icon">🧮</span> <span data-i18n="fraction_calc_title">Fraction Calculator</span></h2>
+                    <div class="grid-2" style="gap:12px;">
+                        <div class="input-group">
+                            <label data-i18n="numerator1">Numerator 1</label>
+                            <input type="number" id="frac-n1" value="3" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label data-i18n="denominator1">Denominator 1</label>
+                            <input type="number" id="frac-d1" value="4" step="1" min="1">
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top:8px;">
+                        <label data-i18n="operation">Operation</label>
+                        <select id="frac-op">
+                            <option value="+" data-i18n="op_add">Addition (+)</option>
+                            <option value="-" data-i18n="op_sub">Subtraction (−)</option>
+                            <option value="×" data-i18n="op_mul">Multiplication (×)</option>
+                            <option value="÷" data-i18n="op_div">Division (÷)</option>
+                        </select>
+                    </div>
+                    <div class="grid-2" style="gap:12px;">
+                        <div class="input-group">
+                            <label data-i18n="numerator2">Numerator 2</label>
+                            <input type="number" id="frac-n2" value="1" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label data-i18n="denominator2">Denominator 2</label>
+                            <input type="number" id="frac-d2" value="3" step="1" min="1">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="calculateFraction()" data-i18n="solve_btn">🔍 Solve</button>
+                    <div class="result-grid" style="margin-top:16px;">
+                        <div class="result-item"><div class="label" data-i18n="result_label">Result</div><div class="value" id="frac-result">—</div></div>
+                        <div class="result-item"><div class="label" data-i18n="decimal_label">Decimal</div><div class="value warm" id="frac-decimal">—</div></div>
+                    </div>
+                    <div class="formula-display" id="formula-frac">a/b + c/d = (ad + bc) / bd</div>
+                </div>
+                <div class="card">
+                    <h2><span class="icon">👁️</span> <span data-i18n="visual_title">Visual Representation</span></h2>
+                    <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:12px;" data-i18n="visual_compare">Fraction 1 (left bar) vs Fraction 2 (right bar)</p>
+                    <div class="frac-visual">
+                        <div>
+                            <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:4px;"><span data-i18n="fraction1_label">Fraction 1:</span> <span id="frac1-label">3/4</span></p>
+                            <div class="frac-bar" id="frac1-bar"><div class="filled" style="width:75%;">75%</div><div class="empty">25%</div></div>
+                        </div>
+                        <div>
+                            <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:4px;"><span data-i18n="fraction2_label">Fraction 2:</span> <span id="frac2-label">1/3</span></p>
+                            <div class="frac-bar" id="frac2-bar"><div class="filled" style="width:33.33%;">33%</div><div class="empty">67%</div></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:8px;" data-i18n="result_visual_label">Result Visualization:</p>
+                        <div class="frac-bar" id="frac-result-bar"><div class="filled" style="width:50%;">—</div><div class="empty">—</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <h2><span class="icon">📝</span> <span data-i18n="steps_title">Step-by-Step Solution</span></h2>
+                <div class="steps-container" id="frac-steps"></div>
+            </div>
+            <div class="card" style="margin-top:20px;">
+                <h2><span class="icon">📝</span> <span data-i18n="frac_word_title">Fraction-Based Distance Problems</span></h2>
+                <div class="grid-2" style="gap:14px;">
+                    <div class="work-problem">
+                        <p><strong data-i18n="problem">Problem:</strong> <span data-i18n="distance_problem">A car travels</span> <span id="fp-dist-frac">3/4</span> <span data-i18n="of_journey">of a journey at 60 km/h, and the remaining</span> <span id="fp-dist-frac2">1/4</span> <span data-i18n="at_speed">at 80 km/h. Total distance =</span> <input type="number" id="fp-total-dist" value="240" min="1" style="width:80px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);"> km</p>
+                        <p style="margin-top:8px;"><span data-i18n="time_first">Time for first part:</span> <strong id="fp-time1">—</strong> · <span data-i18n="time_second">Time for second part:</span> <strong id="fp-time2">—</strong></p>
+                        <p><span data-i18n="total_time">Total time:</span> <strong id="fp-total-time" style="color:var(--accent);">—</strong></p>
+                        <p><span data-i18n="avg_speed">Average speed:</span> <strong id="fp-avg-speed" style="color:var(--success);">—</strong></p>
+                        <button class="btn btn-secondary" style="margin-top:8px;" onclick="calculateFractionDistance()" data-i18n="solve_distance_btn">🔍 Solve Distance</button>
+                    </div>
+                    <div class="work-problem" style="border-left-color:var(--accent);">
+                        <p><strong data-i18n="problem">Problem:</strong> <span data-i18n="tank_problem">A tank is</span> <span id="fp-tank-frac">2/5</span> <span data-i18n="full_start">full. If you add</span> <input type="number" id="fp-add-litres" value="12" min="1" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);"> <span data-i18n="litres">litres, it becomes</span> <span id="fp-tank-frac2">3/5</span> <span data-i18n="full_end">full.</span></p>
+                        <p style="margin-top:8px;"><span data-i18n="fraction_increase">Fraction increase:</span> <strong id="fp-inc-frac">—</strong></p>
+                        <p><span data-i18n="tank_capacity">Total tank capacity:</span> <strong id="fp-tank-cap" style="color:var(--accent);">—</strong> litres</p>
+                        <button class="btn btn-secondary" style="margin-top:8px;" onclick="calculateTankProblem()" data-i18n="solve_tank_btn">🔍 Solve Tank</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <h2><span class="icon">📝</span> <span data-i18n="steps_title">Step-by-Step Solutions for Word Problems</span></h2>
+                <div class="steps-container" id="frac-word-steps"></div>
+            </div>
+        </div>
+
+        <!-- WORK-RATE TAB -->
+        <div class="tab-content" id="workrate-tab">
+            <div class="grid-2">
+                <div class="card">
+                    <h2><span class="icon">⚡</span> <span data-i18n="work_rate_title">Combined Work-Rate Solver</span></h2>
+                    <p style="font-size:0.9rem;color:var(--text-dim);margin-bottom:14px;" data-i18n="work_rate_desc">Two workers/pipes complete a job at different rates. Find combined time.</p>
+                    <div class="grid-2" style="gap:12px;">
+                        <div class="input-group">
+                            <label data-i18n="worker_a_time">Worker A: time to complete job (hours)</label>
+                            <input type="number" id="wr-a" value="3" min="0.01" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label data-i18n="worker_b_time">Worker B: time to complete job (hours)</label>
+                            <input type="number" id="wr-b" value="6" min="0.01" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top:8px;">
+                        <label data-i18n="scenario">Scenario</label>
+                        <select id="wr-scenario">
+                            <option value="2-pipes" data-i18n="scenario_pipes">Two Pipes Filling a Pool</option>
+                            <option value="2-workers" data-i18n="scenario_workers">Two Workers Building a Wall</option>
+                            <option value="pump-drain" data-i18n="scenario_drain">Pump In + Drain Out</option>
+                            <option value="3-workers" data-i18n="scenario_three">Three Workers (add C)</option>
+                        </select>
+                    </div>
+                    <div class="input-group" id="wr-c-group" style="display:none;">
+                        <label data-i18n="worker_c_time">Worker C: time to complete job (hours)</label>
+                        <input type="number" id="wr-c" value="9" min="0.01" step="0.1">
+                    </div>
+                    <div class="unit-selector">
+                        <label data-i18n="unit_label">Unit:</label>
+                        <select id="work-unit">
+                            <option value="litres" data-i18n="unit_litres">Litres</option>
+                            <option value="metres" data-i18n="unit_metres">Metres</option>
+                            <option value="sqmetres" data-i18n="unit_sqmetres">Square Metres</option>
+                            <option value="items" data-i18n="unit_items">Items</option>
+                            <option value="jobs" data-i18n="unit_jobs">Jobs</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="calculateWorkRate()" data-i18n="solve_work_btn">🔍 Solve Work Rate</button>
+                    <div class="result-grid" style="margin-top:16px;">
+                        <div class="result-item"><div class="label" data-i18n="rate_a">Rate A</div><div class="value" id="wr-rate-a">—</div></div>
+                        <div class="result-item"><div class="label" data-i18n="rate_b">Rate B</div><div class="value" id="wr-rate-b">—</div></div>
+                        <div class="result-item" id="wr-rate-c-item" style="display:none;"><div class="label" data-i18n="rate_c">Rate C</div><div class="value" id="wr-rate-c">—</div></div>
+                        <div class="result-item"><div class="label" data-i18n="combined_time">Combined Time</div><div class="value success" id="wr-combined">—</div></div>
+                    </div>
+                    <div class="formula-display">1/T = 1/A + 1/B (+ 1/C)</div>
+                </div>
+                <div class="card">
+                    <h2><span class="icon">📈</span> <span data-i18n="rate_visual_title">Rate Visualization</span></h2>
+                    <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:14px;" data-i18n="rate_visual_desc">Comparison of individual rates vs combined rate (jobs per hour)</p>
+                    <svg id="wr-svg" width="100%" height="220" viewBox="0 0 400 220"></svg>
+                    <div id="wr-note" style="font-size:0.85rem;color:var(--accent);text-align:center;margin-top:8px;"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2><span class="icon">📝</span> <span data-i18n="steps_title">Step-by-Step Solution</span></h2>
+                <div class="steps-container" id="wr-steps"></div>
+            </div>
+            <div class="card" style="margin-top:20px;">
+                <h2><span class="icon">📋</span> <span data-i18n="classic_word_title">Classic Work-Rate Word Problems</span></h2>
+                <div class="grid-2" style="gap:14px;">
+                    <div class="work-problem">
+                        <p><strong data-i18n="problem">Problem 1:</strong> <span data-i18n="pipe_a_fills">Pipe A fills a pool in</span> <input type="number" id="wp1-a" value="4" min="0.1" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);"> <span data-i18n="hours">hours, Pipe B fills it in</span> <input type="number" id="wp1-b" value="6" min="0.1" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);"> <span data-i18n="hours2">hours. How long together?</span></p>
+                        <p style="margin-top:8px;"><span data-i18n="answer">Answer:</span> <strong id="wp1-answer" style="color:var(--accent);">—</strong></p>
+                        <button class="btn btn-secondary" style="margin-top:6px;" onclick="solveWordProblem1()" data-i18n="solve_btn">🔍 Solve</button>
+                    </div>
+                    <div class="work-problem" style="border-left-color:var(--success);">
+                        <p><strong data-i18n="problem">Problem 2:</strong> <span data-i18n="worker_a_days">Worker A takes</span> <input type="number" id="wp2-a" value="5" min="0.1" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);"> <span data-i18n="days">days, Worker B takes</span> <input type="number" id="wp2-b" value="8" min="0.1" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);"> <span data-i18n="days2">days. They work together for 2 days, then A leaves. How long for B to finish?</span></p>
+                        <p style="margin-top:8px;"><span data-i18n="answer">Answer:</span> <strong id="wp2-answer" style="color:var(--success);">—</strong></p>
+                        <button class="btn btn-secondary" style="margin-top:6px;" onclick="solveWordProblem2()" data-i18n="solve_btn">🔍 Solve</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <h2><span class="icon">📝</span> <span data-i18n="steps_title">Step-by-Step Solutions for Classic Problems</span></h2>
+                <div class="steps-container" id="wp-steps"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== TRANSLATIONS (12 languages) ====================
+        const translations = {
+            en: {
+                main_title: "📐 Geometry & Fraction Solver Suite",
+                main_subtitle: "Interactive Circle Geometry Engine · Fraction Visualizer · Work-Rate Problem Solver",
+                language_label: "Language:",
+                tab_circle: "🔵 Circle Properties",
+                tab_fraction: "🔢 Fraction Solver",
+                tab_workrate: "⚡ Work-Rate Problems",
+                circle_inputs_title: "Circle Inputs",
+                measurement_type: "Measurement Type",
+                radius_option: "Radius (r)",
+                diameter_option: "Diameter (d)",
+                radius_label: "Radius (r)",
+                diameter_label: "Diameter (d)",
+                arc_angle_label: "Arc / Sector Angle (degrees) — optional",
+                calculate_btn: "🔍 Calculate",
+                results_title: "Results",
+                radius_res: "Radius",
+                diameter_res: "Diameter",
+                circumference_res: "Circumference",
+                area_res: "Area",
+                arc_length_res: "Arc Length",
+                sector_area_res: "Sector Area",
+                fraction_calc_title: "Fraction Calculator",
+                numerator1: "Numerator 1",
+                denominator1: "Denominator 1",
+                operation: "Operation",
+                op_add: "Addition (+)",
+                op_sub: "Subtraction (−)",
+                op_mul: "Multiplication (×)",
+                op_div: "Division (÷)",
+                numerator2: "Numerator 2",
+                denominator2: "Denominator 2",
+                solve_btn: "🔍 Solve",
+                result_label: "Result",
+                decimal_label: "Decimal",
+                visual_title: "Visual Representation",
+                visual_compare: "Fraction 1 (left bar) vs Fraction 2 (right bar)",
+                fraction1_label: "Fraction 1:",
+                fraction2_label: "Fraction 2:",
+                result_visual_label: "Result Visualization:",
+                frac_word_title: "Fraction-Based Distance Problems",
+                problem: "Problem:",
+                distance_problem: "A car travels",
+                of_journey: "of a journey at 60 km/h, and the remaining",
+                at_speed: "at 80 km/h. Total distance =",
+                time_first: "Time for first part:",
+                time_second: "Time for second part:",
+                total_time: "Total time:",
+                avg_speed: "Average speed:",
+                solve_distance_btn: "🔍 Solve Distance",
+                tank_problem: "A tank is",
+                full_start: "full. If you add",
+                litres: "litres, it becomes",
+                full_end: "full.",
+                fraction_increase: "Fraction increase:",
+                tank_capacity: "Total tank capacity:",
+                solve_tank_btn: "🔍 Solve Tank",
+                work_rate_title: "Combined Work-Rate Solver",
+                work_rate_desc: "Two workers/pipes complete a job at different rates. Find combined time.",
+                worker_a_time: "Worker A: time to complete job (hours)",
+                worker_b_time: "Worker B: time to complete job (hours)",
+                scenario: "Scenario",
+                scenario_pipes: "Two Pipes Filling a Pool",
+                scenario_workers: "Two Workers Building a Wall",
+                scenario_drain: "Pump In + Drain Out",
+                scenario_three: "Three Workers (add C)",
+                worker_c_time: "Worker C: time to complete job (hours)",
+                solve_work_btn: "🔍 Solve Work Rate",
+                rate_a: "Rate A",
+                rate_b: "Rate B",
+                rate_c: "Rate C",
+                combined_time: "Combined Time",
+                rate_visual_title: "Rate Visualization",
+                rate_visual_desc: "Comparison of individual rates vs combined rate (jobs per hour)",
+                steps_title: "Step-by-Step Solution",
+                classic_word_title: "Classic Work-Rate Word Problems",
+                pipe_a_fills: "Pipe A fills a pool in",
+                hours: "hours, Pipe B fills it in",
+                hours2: "hours. How long together?",
+                answer: "Answer:",
+                worker_a_days: "Worker A takes",
+                days: "days, Worker B takes",
+                days2: "days. They work together for 2 days, then A leaves. How long for B to finish?",
+                unit_label: "Unit:",
+                unit_litres: "Litres",
+                unit_metres: "Metres",
+                unit_sqmetres: "Square Metres",
+                unit_items: "Items",
+                unit_jobs: "Jobs",
+                steps_circle_title: "Circle Calculation Steps",
+                steps_fraction_title: "Fraction Calculation Steps",
+                steps_distance_title: "Distance Problem Steps",
+                steps_tank_title: "Tank Problem Steps",
+                steps_workrate_title: "Work-Rate Calculation Steps",
+                steps_classic_title: "Classic Problems Steps"
+            },
+            ka: { main_title: "📐 გეომეტრიისა და წილადების ამომხსნელი კომპლექსი", main_subtitle: "ინტერაქტიული წრის გეომეტრიის ძრავა · წილადების ვიზუალიზატორი · სამუშაო ტემპის ამომხსნელი", language_label: "ენა:", tab_circle: "🔵 წრის თვისებები", tab_fraction: "🔢 წილადების ამომხსნელი", tab_workrate: "⚡ სამუშაო ტემპის ამოცანები", circle_inputs_title: "წრის შეყვანები", measurement_type: "გაზომვის ტიპი", radius_option: "რადიუსი (r)", diameter_option: "დიამეტრი (d)", radius_label: "რადიუსი (r)", diameter_label: "დიამეტრი (d)", arc_angle_label: "რკალის/სექტორის კუთხე (გრადუსები) — სურვილისამებრ", calculate_btn: "🔍 გამოთვლა", results_title: "შედეგები", radius_res: "რადიუსი", diameter_res: "დიამეტრი", circumference_res: "წრეწირი", area_res: "ფართობი", arc_length_res: "რკალის სიგრძე", sector_area_res: "სექტორის ფართობი", fraction_calc_title: "წილადების კალკულატორი", numerator1: "მრიცხველი 1", denominator1: "მნიშვნელი 1", operation: "ოპერაცია", op_add: "შეკრება (+)", op_sub: "გამოკლება (−)", op_mul: "გამრავლება (×)", op_div: "გაყოფა (÷)", numerator2: "მრიცხველი 2", denominator2: "მნიშვნელი 2", solve_btn: "🔍 ამოხსნა", result_label: "შედეგი", decimal_label: "ათწილადი", visual_title: "ვიზუალური წარმოდგენა", visual_compare: "წილადი 1 (მარცხენა ზოლი) წილადი 2-ის წინააღმდეგ (მარჯვენა ზოლი)", fraction1_label: "წილადი 1:", fraction2_label: "წილადი 2:", result_visual_label: "შედეგის ვიზუალიზაცია:", frac_word_title: "წილადებზე დაფუძნებული მანძილის ამოცანები", problem: "ამოცანა:", distance_problem: "მანქანა გადის", of_journey: "მგზავრობის ნაწილს 60 კმ/სთ სიჩქარით, ხოლო დანარჩენს", at_speed: "80 კმ/სთ სიჩქარით. მთლიანი მანძილი =", time_first: "პირველი ნაწილის დრო:", time_second: "მეორე ნაწილის დრო:", total_time: "მთლიანი დრო:", avg_speed: "საშუალო სიჩქარე:", solve_distance_btn: "🔍 მანძილის ამოხსნა", tank_problem: "ავზი არის", full_start: "სავსე. თუ დაამატებთ", litres: "ლიტრს, ხდება", full_end: "სავსე.", fraction_increase: "წილადის ზრდა:", tank_capacity: "ავზის მთლიანი ტევადობა:", solve_tank_btn: "🔍 ავზის ამოხსნა", work_rate_title: "კომბინირებული სამუშაო ტემპის ამომხსნელი", work_rate_desc: "ორი მუშა/მილი ასრულებს სამუშაოს სხვადასხვა ტემპით. იპოვეთ კომბინირებული დრო.", worker_a_time: "მუშა A: დრო სამუშაოს შესასრულებლად (საათები)", worker_b_time: "მუშა B: დრო სამუშაოს შესასრულებლად (საათები)", scenario: "სცენარი", scenario_pipes: "ორი მილი ავსებს აუზს", scenario_workers: "ორი მუშა აშენებს კედელს", scenario_drain: "ტუმბო შევსება + დრენაჟი", scenario_three: "სამი მუშა (დაამატეთ C)", worker_c_time: "მუშა C: დრო სამუშაოს შესასრულებლად (საათები)", solve_work_btn: "🔍 სამუშაო ტემპის ამოხსნა", rate_a: "ტემპი A", rate_b: "ტემპი B", rate_c: "ტემპი C", combined_time: "კომბინირებული დრო", rate_visual_title: "ტემპების ვიზუალიზაცია", rate_visual_desc: "ინდივიდუალური ტემპების შედარება კომბინირებულ ტემპთან (სამუშაო/საათი)", steps_title: "ნაბიჯ-ნაბიჯ ამოხსნა", classic_word_title: "კლასიკური სამუშაო ტემპის ამოცანები", pipe_a_fills: "მილი A ავსებს აუზს", hours: "საათში, მილი B ავსებს", hours2: "საათში. რამდენ ხანში ერთად?", answer: "პასუხი:", worker_a_days: "მუშა A ასრულებს", days: "დღეში, მუშა B ასრულებს", days2: "დღეში. ისინი მუშაობენ ერთად 2 დღე, შემდეგ A მიდის. რამდენი დრო სჭირდება B-ს დასრულებას?", unit_label: "ერთეული:", unit_litres: "ლიტრი", unit_metres: "მეტრი", unit_sqmetres: "კვადრატული მეტრი", unit_items: "ერთეული", unit_jobs: "სამუშაო", steps_circle_title: "წრის გამოთვლის ნაბიჯები", steps_fraction_title: "წილადის გამოთვლის ნაბიჯები", steps_distance_title: "მანძილის ამოცანის ნაბიჯები", steps_tank_title: "ავზის ამოცანის ნაბიჯები", steps_workrate_title: "სამუშაო ტემპის გამოთვლის ნაბიჯები", steps_classic_title: "კლასიკური ამოცანების ნაბიჯები" },
+            es: { main_title: "📐 Suite de Geometría y Fracciones", main_subtitle: "Motor interactivo de geometría circular · Visualizador de fracciones · Solucionador de ritmo de trabajo", language_label: "Idioma:", tab_circle: "🔵 Propiedades del Círculo", tab_fraction: "🔢 Solucionador de Fracciones", tab_workrate: "⚡ Problemas de Ritmo de Trabajo", circle_inputs_title: "Entradas del Círculo", measurement_type: "Tipo de Medida", radius_option: "Radio (r)", diameter_option: "Diámetro (d)", radius_label: "Radio (r)", diameter_label: "Diámetro (d)", arc_angle_label: "Ángulo de arco/sector (grados) — opcional", calculate_btn: "🔍 Calcular", results_title: "Resultados", radius_res: "Radio", diameter_res: "Diámetro", circumference_res: "Circunferencia", area_res: "Área", arc_length_res: "Longitud de Arco", sector_area_res: "Área del Sector", fraction_calc_title: "Calculadora de Fracciones", numerator1: "Numerador 1", denominator1: "Denominador 1", operation: "Operación", op_add: "Suma (+)", op_sub: "Resta (−)", op_mul: "Multiplicación (×)", op_div: "División (÷)", numerator2: "Numerador 2", denominator2: "Denominador 2", solve_btn: "🔍 Resolver", result_label: "Resultado", decimal_label: "Decimal", visual_title: "Representación Visual", visual_compare: "Fracción 1 (barra izquierda) vs Fracción 2 (barra derecha)", fraction1_label: "Fracción 1:", fraction2_label: "Fracción 2:", result_visual_label: "Visualización del Resultado:", frac_word_title: "Problemas de Distancia con Fracciones", problem: "Problema:", distance_problem: "Un coche recorre", of_journey: "del viaje a 60 km/h, y el resto", at_speed: "a 80 km/h. Distancia total =", time_first: "Tiempo de la primera parte:", time_second: "Tiempo de la segunda parte:", total_time: "Tiempo total:", avg_speed: "Velocidad media:", solve_distance_btn: "🔍 Resolver Distancia", tank_problem: "Un tanque está", full_start: "lleno. Si añades", litres: "litros, se vuelve", full_end: "lleno.", fraction_increase: "Aumento de fracción:", tank_capacity: "Capacidad total del tanque:", solve_tank_btn: "🔍 Resolver Tanque", work_rate_title: "Solucionador de Ritmo Combinado", work_rate_desc: "Dos trabajadores/tuberías completan un trabajo a ritmos diferentes. Encuentra el tiempo combinado.", worker_a_time: "Trabajador A: tiempo para completar el trabajo (horas)", worker_b_time: "Trabajador B: tiempo para completar el trabajo (horas)", scenario: "Escenario", scenario_pipes: "Dos tuberías llenando una piscina", scenario_workers: "Dos trabajadores construyendo un muro", scenario_drain: "Bomba de entrada + desagüe", scenario_three: "Tres trabajadores (añadir C)", worker_c_time: "Trabajador C: tiempo para completar el trabajo (horas)", solve_work_btn: "🔍 Resolver Ritmo", rate_a: "Ritmo A", rate_b: "Ritmo B", rate_c: "Ritmo C", combined_time: "Tiempo Combinado", rate_visual_title: "Visualización de Ritmos", rate_visual_desc: "Comparación de ritmos individuales vs ritmo combinado (trabajos por hora)", steps_title: "Solución Paso a Paso", classic_word_title: "Problemas Clásicos de Ritmo de Trabajo", pipe_a_fills: "La tubería A llena una piscina en", hours: "horas, la tubería B la llena en", hours2: "horas. ¿Cuánto tardan juntas?", answer: "Respuesta:", worker_a_days: "El trabajador A tarda", days: "días, el trabajador B tarda", days2: "días. Trabajan juntos durante 2 días, luego A se va. ¿Cuánto tarda B en terminar?", unit_label: "Unidad:", unit_litres: "Litros", unit_metres: "Metros", unit_sqmetres: "Metros cuadrados", unit_items: "Elementos", unit_jobs: "Trabajos", steps_circle_title: "Pasos del Cálculo del Círculo", steps_fraction_title: "Pasos del Cálculo de Fracciones", steps_distance_title: "Pasos del Problema de Distancia", steps_tank_title: "Pasos del Problema del Tanque", steps_workrate_title: "Pasos del Cálculo de Ritmo de Trabajo", steps_classic_title: "Pasos de Problemas Clásicos" },
+            fr: { main_title: "📐 Suite de géométrie et de fractions", main_subtitle: "Moteur interactif de géométrie circulaire · Visualiseur de fractions · Solveur de rythme de travail", language_label: "Langue:", tab_circle: "🔵 Propriétés du cercle", tab_fraction: "🔢 Solveur de fractions", tab_workrate: "⚡ Problèmes de rythme de travail", circle_inputs_title: "Entrées du cercle", measurement_type: "Type de mesure", radius_option: "Rayon (r)", diameter_option: "Diamètre (d)", radius_label: "Rayon (r)", diameter_label: "Diamètre (d)", arc_angle_label: "Angle de l'arc/secteur (degrés) — facultatif", calculate_btn: "🔍 Calculer", results_title: "Résultats", radius_res: "Rayon", diameter_res: "Diamètre", circumference_res: "Circonférence", area_res: "Aire", arc_length_res: "Longueur de l'arc", sector_area_res: "Aire du secteur", fraction_calc_title: "Calculatrice de fractions", numerator1: "Numérateur 1", denominator1: "Dénominateur 1", operation: "Opération", op_add: "Addition (+)", op_sub: "Soustraction (−)", op_mul: "Multiplication (×)", op_div: "Division (÷)", numerator2: "Numérateur 2", denominator2: "Dénominateur 2", solve_btn: "🔍 Résoudre", result_label: "Résultat", decimal_label: "Décimal", visual_title: "Représentation visuelle", visual_compare: "Fraction 1 (barre gauche) vs Fraction 2 (barre droite)", fraction1_label: "Fraction 1 :", fraction2_label: "Fraction 2 :", result_visual_label: "Visualisation du résultat :", frac_word_title: "Problèmes de distance à base de fractions", problem: "Problème :", distance_problem: "Une voiture parcourt", of_journey: "du trajet à 60 km/h, et le reste", at_speed: "à 80 km/h. Distance totale =", time_first: "Temps pour la première partie :", time_second: "Temps pour la deuxième partie :", total_time: "Temps total :", avg_speed: "Vitesse moyenne :", solve_distance_btn: "🔍 Résoudre la distance", tank_problem: "Un réservoir est", full_start: "plein. Si vous ajoutez", litres: "litres, il devient", full_end: "plein.", fraction_increase: "Augmentation de fraction :", tank_capacity: "Capacité totale du réservoir :", solve_tank_btn: "🔍 Résoudre le réservoir", work_rate_title: "Solveur de rythme combiné", work_rate_desc: "Deux travailleurs/tuyaux accomplissent un travail à des rythmes différents. Trouvez le temps combiné.", worker_a_time: "Travailleur A : temps pour terminer le travail (heures)", worker_b_time: "Travailleur B : temps pour terminer le travail (heures)", scenario: "Scénario", scenario_pipes: "Deux tuyaux remplissant une piscine", scenario_workers: "Deux travailleurs construisant un mur", scenario_drain: "Pompe d'entrée + vidange", scenario_three: "Trois travailleurs (ajouter C)", worker_c_time: "Travailleur C : temps pour terminer le travail (heures)", solve_work_btn: "🔍 Résoudre le rythme", rate_a: "Rythme A", rate_b: "Rythme B", rate_c: "Rythme C", combined_time: "Temps combiné", rate_visual_title: "Visualisation des rythmes", rate_visual_desc: "Comparaison des rythmes individuels vs rythme combiné (travaux par heure)", steps_title: "Solution étape par étape", classic_word_title: "Problèmes classiques de rythme de travail", pipe_a_fills: "Le tuyau A remplit une piscine en", hours: "heures, le tuyau B la remplit en", hours2: "heures. Combien de temps ensemble ?", answer: "Réponse :", worker_a_days: "Le travailleur A met", days: "jours, le travailleur B met", days2: "jours. Ils travaillent ensemble pendant 2 jours, puis A part. Combien de temps pour B pour finir ?", unit_label: "Unité :", unit_litres: "Litres", unit_metres: "Mètres", unit_sqmetres: "Mètres carrés", unit_items: "Éléments", unit_jobs: "Travaux", steps_circle_title: "Étapes du calcul du cercle", steps_fraction_title: "Étapes du calcul de fractions", steps_distance_title: "Étapes du problème de distance", steps_tank_title: "Étapes du problème du réservoir", steps_workrate_title: "Étapes du calcul du rythme de travail", steps_classic_title: "Étapes des problèmes classiques" },
+            de: { main_title: "📐 Geometrie- und Bruch-Löser-Suite", main_subtitle: "Interaktive Kreisgeometrie-Engine · Bruch-Visualisierer · Arbeitsraten-Löser", language_label: "Sprache:", tab_circle: "🔵 Kreiseigenschaften", tab_fraction: "🔢 Bruch-Löser", tab_workrate: "⚡ Arbeitsraten-Probleme", circle_inputs_title: "Kreiseingaben", measurement_type: "Messart", radius_option: "Radius (r)", diameter_option: "Durchmesser (d)", radius_label: "Radius (r)", diameter_label: "Durchmesser (d)", arc_angle_label: "Bogen-/Sektorwinkel (Grad) — optional", calculate_btn: "🔍 Berechnen", results_title: "Ergebnisse", radius_res: "Radius", diameter_res: "Durchmesser", circumference_res: "Umfang", area_res: "Fläche", arc_length_res: "Bogenlänge", sector_area_res: "Sektorfläche", fraction_calc_title: "Bruchrechner", numerator1: "Zähler 1", denominator1: "Nenner 1", operation: "Operation", op_add: "Addition (+)", op_sub: "Subtraktion (−)", op_mul: "Multiplikation (×)", op_div: "Division (÷)", numerator2: "Zähler 2", denominator2: "Nenner 2", solve_btn: "🔍 Lösen", result_label: "Ergebnis", decimal_label: "Dezimal", visual_title: "Visuelle Darstellung", visual_compare: "Bruch 1 (linker Balken) vs Bruch 2 (rechter Balken)", fraction1_label: "Bruch 1:", fraction2_label: "Bruch 2:", result_visual_label: "Ergebnisvisualisierung:", frac_word_title: "Bruchbasierte Distanzprobleme", problem: "Problem:", distance_problem: "Ein Auto fährt", of_journey: "der Strecke mit 60 km/h und den Rest", at_speed: "mit 80 km/h. Gesamtstrecke =", time_first: "Zeit für ersten Teil:", time_second: "Zeit für zweiten Teil:", total_time: "Gesamtzeit:", avg_speed: "Durchschnittsgeschwindigkeit:", solve_distance_btn: "🔍 Distanz lösen", tank_problem: "Ein Tank ist", full_start: "voll. Wenn Sie", litres: "Liter hinzufügen, wird er", full_end: "voll.", fraction_increase: "Brucherhöhung:", tank_capacity: "Gesamtkapazität des Tanks:", solve_tank_btn: "🔍 Tank lösen", work_rate_title: "Kombinierter Arbeitsraten-Löser", work_rate_desc: "Zwei Arbeiter/Rohre erledigen eine Arbeit mit unterschiedlichen Raten. Finden Sie die kombinierte Zeit.", worker_a_time: "Arbeiter A: Zeit zum Abschluss der Arbeit (Stunden)", worker_b_time: "Arbeiter B: Zeit zum Abschluss der Arbeit (Stunden)", scenario: "Szenario", scenario_pipes: "Zwei Rohre füllen einen Pool", scenario_workers: "Zwei Arbeiter bauen eine Mauer", scenario_drain: "Pumpe rein + Abfluss", scenario_three: "Drei Arbeiter (C hinzufügen)", worker_c_time: "Arbeiter C: Zeit zum Abschluss der Arbeit (Stunden)", solve_work_btn: "🔍 Arbeitsrate lösen", rate_a: "Rate A", rate_b: "Rate B", rate_c: "Rate C", combined_time: "Kombinierte Zeit", rate_visual_title: "Ratenvisualisierung", rate_visual_desc: "Vergleich der Einzelraten vs kombinierte Rate (Arbeiten pro Stunde)", steps_title: "Schritt-für-Schritt-Lösung", classic_word_title: "Klassische Arbeitsraten-Probleme", pipe_a_fills: "Rohr A füllt einen Pool in", hours: "Stunden, Rohr B füllt ihn in", hours2: "Stunden. Wie lange zusammen?", answer: "Antwort:", worker_a_days: "Arbeiter A braucht", days: "Tage, Arbeiter B braucht", days2: "Tage. Sie arbeiten 2 Tage zusammen, dann geht A. Wie lange braucht B zum Fertigstellen?", unit_label: "Einheit:", unit_litres: "Liter", unit_metres: "Meter", unit_sqmetres: "Quadratmeter", unit_items: "Stück", unit_jobs: "Arbeiten", steps_circle_title: "Schritte der Kreisberechnung", steps_fraction_title: "Schritte der Bruchberechnung", steps_distance_title: "Schritte des Distanzproblems", steps_tank_title: "Schritte des Tankproblems", steps_workrate_title: "Schritte der Arbeitsratenberechnung", steps_classic_title: "Schritte klassischer Probleme" },
+            it: { main_title: "📐 Suite di Geometria e Frazioni", main_subtitle: "Motore interattivo di geometria circolare · Visualizzatore di frazioni · Risolutore di ritmi di lavoro", language_label: "Lingua:", tab_circle: "🔵 Proprietà del Cerchio", tab_fraction: "🔢 Risolutore di Frazioni", tab_workrate: "⚡ Problemi di Ritmo di Lavoro", circle_inputs_title: "Input del Cerchio", measurement_type: "Tipo di Misura", radius_option: "Raggio (r)", diameter_option: "Diametro (d)", radius_label: "Raggio (r)", diameter_label: "Diametro (d)", arc_angle_label: "Angolo arco/settore (gradi) — opzionale", calculate_btn: "🔍 Calcola", results_title: "Risultati", radius_res: "Raggio", diameter_res: "Diametro", circumference_res: "Circonferenza", area_res: "Area", arc_length_res: "Lunghezza Arco", sector_area_res: "Area Settore", fraction_calc_title: "Calcolatrice di Frazioni", numerator1: "Numeratore 1", denominator1: "Denominatore 1", operation: "Operazione", op_add: "Addizione (+)", op_sub: "Sottrazione (−)", op_mul: "Moltiplicazione (×)", op_div: "Divisione (÷)", numerator2: "Numeratore 2", denominator2: "Denominatore 2", solve_btn: "🔍 Risolvi", result_label: "Risultato", decimal_label: "Decimale", visual_title: "Rappresentazione Visiva", visual_compare: "Frazione 1 (barra sinistra) vs Frazione 2 (barra destra)", fraction1_label: "Frazione 1:", fraction2_label: "Frazione 2:", result_visual_label: "Visualizzazione Risultato:", frac_word_title: "Problemi di Distanza con Frazioni", problem: "Problema:", distance_problem: "Un'auto percorre", of_journey: "del viaggio a 60 km/h, e il resto", at_speed: "a 80 km/h. Distanza totale =", time_first: "Tempo per la prima parte:", time_second: "Tempo per la seconda parte:", total_time: "Tempo totale:", avg_speed: "Velocità media:", solve_distance_btn: "🔍 Risolvi Distanza", tank_problem: "Un serbatoio è", full_start: "pieno. Se aggiungi", litres: "litri, diventa", full_end: "pieno.", fraction_increase: "Aumento di frazione:", tank_capacity: "Capacità totale del serbatoio:", solve_tank_btn: "🔍 Risolvi Serbatoio", work_rate_title: "Risolutore di Ritmo Combinato", work_rate_desc: "Due lavoratori/tubi completano un lavoro a ritmi diversi. Trova il tempo combinato.", worker_a_time: "Lavoratore A: tempo per completare il lavoro (ore)", worker_b_time: "Lavoratore B: tempo per completare il lavoro (ore)", scenario: "Scenario", scenario_pipes: "Due tubi che riempiono una piscina", scenario_workers: "Due lavoratori che costruiscono un muro", scenario_drain: "Pompa in entrata + scarico", scenario_three: "Tre lavoratori (aggiungi C)", worker_c_time: "Lavoratore C: tempo per completare il lavoro (ore)", solve_work_btn: "🔍 Risolvi Ritmo", rate_a: "Ritmo A", rate_b: "Ritmo B", rate_c: "Ritmo C", combined_time: "Tempo Combinato", rate_visual_title: "Visualizzazione dei Ritmi", rate_visual_desc: "Confronto dei ritmi individuali vs ritmo combinato (lavori all'ora)", steps_title: "Soluzione Passo-Passo", classic_word_title: "Problemi Classici di Ritmo di Lavoro", pipe_a_fills: "Il tubo A riempie una piscina in", hours: "ore, il tubo B la riempie in", hours2: "ore. Quanto tempo insieme?", answer: "Risposta:", worker_a_days: "Il lavoratore A impiega", days: "giorni, il lavoratore B impiega", days2: "giorni. Lavorano insieme per 2 giorni, poi A se ne va. Quanto tempo impiega B a finire?", unit_label: "Unità:", unit_litres: "Litri", unit_metres: "Metri", unit_sqmetres: "Metri quadrati", unit_items: "Elementi", unit_jobs: "Lavori", steps_circle_title: "Passi del Calcolo del Cerchio", steps_fraction_title: "Passi del Calcolo delle Frazioni", steps_distance_title: "Passi del Problema di Distanza", steps_tank_title: "Passi del Problema del Serbatoio", steps_workrate_title: "Passi del Calcolo del Ritmo di Lavoro", steps_classic_title: "Passi dei Problemi Classici" },
+            pt: { main_title: "📐 Suíte de Geometria e Frações", main_subtitle: "Motor interativo de geometria circular · Visualizador de frações · Solucionador de ritmo de trabalho", language_label: "Idioma:", tab_circle: "🔵 Propriedades do Círculo", tab_fraction: "🔢 Solucionador de Frações", tab_workrate: "⚡ Problemas de Ritmo de Trabalho", circle_inputs_title: "Entradas do Círculo", measurement_type: "Tipo de Medida", radius_option: "Raio (r)", diameter_option: "Diâmetro (d)", radius_label: "Raio (r)", diameter_label: "Diâmetro (d)", arc_angle_label: "Ângulo do arco/setor (graus) — opcional", calculate_btn: "🔍 Calcular", results_title: "Resultados", radius_res: "Raio", diameter_res: "Diâmetro", circumference_res: "Circunferência", area_res: "Área", arc_length_res: "Comprimento do Arco", sector_area_res: "Área do Setor", fraction_calc_title: "Calculadora de Frações", numerator1: "Numerador 1", denominator1: "Denominador 1", operation: "Operação", op_add: "Adição (+)", op_sub: "Subtração (−)", op_mul: "Multiplicação (×)", op_div: "Divisão (÷)", numerator2: "Numerador 2", denominator2: "Denominador 2", solve_btn: "🔍 Resolver", result_label: "Resultado", decimal_label: "Decimal", visual_title: "Representação Visual", visual_compare: "Fração 1 (barra esquerda) vs Fração 2 (barra direita)", fraction1_label: "Fração 1:", fraction2_label: "Fração 2:", result_visual_label: "Visualização do Resultado:", frac_word_title: "Problemas de Distância com Frações", problem: "Problema:", distance_problem: "Um carro percorre", of_journey: "da viagem a 60 km/h, e o restante", at_speed: "a 80 km/h. Distância total =", time_first: "Tempo para a primeira parte:", time_second: "Tempo para a segunda parte:", total_time: "Tempo total:", avg_speed: "Velocidade média:", solve_distance_btn: "🔍 Resolver Distância", tank_problem: "Um tanque está", full_start: "cheio. Se você adicionar", litres: "litros, ele fica", full_end: "cheio.", fraction_increase: "Aumento de fração:", tank_capacity: "Capacidade total do tanque:", solve_tank_btn: "🔍 Resolver Tanque", work_rate_title: "Solucionador de Ritmo Combinado", work_rate_desc: "Dois trabalhadores/tubos completam um trabalho em ritmos diferentes. Encontre o tempo combinado.", worker_a_time: "Trabalhador A: tempo para concluir o trabalho (horas)", worker_b_time: "Trabalhador B: tempo para concluir o trabalho (horas)", scenario: "Cenário", scenario_pipes: "Dois tubos enchendo uma piscina", scenario_workers: "Dois trabalhadores construindo um muro", scenario_drain: "Bomba de entrada + dreno", scenario_three: "Três trabalhadores (adicionar C)", worker_c_time: "Trabalhador C: tempo para concluir o trabalho (horas)", solve_work_btn: "🔍 Resolver Ritmo", rate_a: "Ritmo A", rate_b: "Ritmo B", rate_c: "Ritmo C", combined_time: "Tempo Combinado", rate_visual_title: "Visualização de Ritmos", rate_visual_desc: "Comparação de ritmos individuais vs ritmo combinado (trabalhos por hora)", steps_title: "Solução Passo a Passo", classic_word_title: "Problemas Clássicos de Ritmo de Trabalho", pipe_a_fills: "O tubo A enche uma piscina em", hours: "horas, o tubo B enche em", hours2: "horas. Quanto tempo juntos?", answer: "Resposta:", worker_a_days: "O trabalhador A leva", days: "dias, o trabalhador B leva", days2: "dias. Eles trabalham juntos por 2 dias, depois A sai. Quanto tempo para B terminar?", unit_label: "Unidade:", unit_litres: "Litros", unit_metres: "Metros", unit_sqmetres: "Metros quadrados", unit_items: "Itens", unit_jobs: "Trabalhos", steps_circle_title: "Passos do Cálculo do Círculo", steps_fraction_title: "Passos do Cálculo de Frações", steps_distance_title: "Passos do Problema de Distância", steps_tank_title: "Passos do Problema do Tanque", steps_workrate_title: "Passos do Cálculo do Ritmo de Trabalho", steps_classic_title: "Passos dos Problemas Clássicos" },
+            ru: { main_title: "📐 Комплекс геометрии и дробей", main_subtitle: "Интерактивный движок геометрии круга · Визуализатор дробей · Решатель рабочих темпов", language_label: "Язык:", tab_circle: "🔵 Свойства круга", tab_fraction: "🔢 Решатель дробей", tab_workrate: "⚡ Задачи на рабочий темп", circle_inputs_title: "Входные данные круга", measurement_type: "Тип измерения", radius_option: "Радиус (r)", diameter_option: "Диаметр (d)", radius_label: "Радиус (r)", diameter_label: "Диаметр (d)", arc_angle_label: "Угол дуги/сектора (градусы) — необязательно", calculate_btn: "🔍 Вычислить", results_title: "Результаты", radius_res: "Радиус", diameter_res: "Диаметр", circumference_res: "Окружность", area_res: "Площадь", arc_length_res: "Длина дуги", sector_area_res: "Площадь сектора", fraction_calc_title: "Калькулятор дробей", numerator1: "Числитель 1", denominator1: "Знаменатель 1", operation: "Операция", op_add: "Сложение (+)", op_sub: "Вычитание (−)", op_mul: "Умножение (×)", op_div: "Деление (÷)", numerator2: "Числитель 2", denominator2: "Знаменатель 2", solve_btn: "🔍 Решить", result_label: "Результат", decimal_label: "Десятичная", visual_title: "Визуальное представление", visual_compare: "Дробь 1 (левая полоса) против Дроби 2 (правая полоса)", fraction1_label: "Дробь 1:", fraction2_label: "Дробь 2:", result_visual_label: "Визуализация результата:", frac_word_title: "Задачи на расстояние с дробями", problem: "Задача:", distance_problem: "Автомобиль проезжает", of_journey: "пути со скоростью 60 км/ч, а оставшуюся часть", at_speed: "со скоростью 80 км/ч. Общее расстояние =", time_first: "Время первой части:", time_second: "Время второй части:", total_time: "Общее время:", avg_speed: "Средняя скорость:", solve_distance_btn: "🔍 Решить расстояние", tank_problem: "Бак заполнен на", full_start: "полон. Если добавить", litres: "литров, он становится", full_end: "полон.", fraction_increase: "Увеличение дроби:", tank_capacity: "Общая вместимость бака:", solve_tank_btn: "🔍 Решить бак", work_rate_title: "Решатель комбинированного темпа", work_rate_desc: "Два работника/трубы выполняют работу с разной скоростью. Найдите общее время.", worker_a_time: "Работник A: время выполнения работы (часы)", worker_b_time: "Работник B: время выполнения работы (часы)", scenario: "Сценарий", scenario_pipes: "Две трубы наполняют бассейн", scenario_workers: "Два работника строят стену", scenario_drain: "Насос на вход + слив", scenario_three: "Три работника (добавить C)", worker_c_time: "Работник C: время выполнения работы (часы)", solve_work_btn: "🔍 Решить темп", rate_a: "Темп A", rate_b: "Темп B", rate_c: "Темп C", combined_time: "Общее время", rate_visual_title: "Визуализация темпов", rate_visual_desc: "Сравнение индивидуальных темпов и общего темпа (работ в час)", steps_title: "Пошаговое решение", classic_word_title: "Классические задачи на рабочий темп", pipe_a_fills: "Труба A наполняет бассейн за", hours: "часов, труба B наполняет за", hours2: "часов. Сколько времени вместе?", answer: "Ответ:", worker_a_days: "Работник A выполняет за", days: "дней, работник B за", days2: "дней. Они работают вместе 2 дня, затем A уходит. Сколько времени нужно B, чтобы закончить?", unit_label: "Единица:", unit_litres: "Литры", unit_metres: "Метры", unit_sqmetres: "Квадратные метры", unit_items: "Штуки", unit_jobs: "Работы", steps_circle_title: "Шаги вычисления круга", steps_fraction_title: "Шаги вычисления дробей", steps_distance_title: "Шаги задачи на расстояние", steps_tank_title: "Шаги задачи про бак", steps_workrate_title: "Шаги вычисления темпа работы", steps_classic_title: "Шаги классических задач" },
+            zh: { main_title: "📐 几何与分数求解套件", main_subtitle: "交互式圆的几何引擎 · 分数可视化器 · 工作效率求解器", language_label: "语言：", tab_circle: "🔵 圆的性质", tab_fraction: "🔢 分数求解器", tab_workrate: "⚡ 工作效率问题", circle_inputs_title: "圆输入", measurement_type: "测量类型", radius_option: "半径 (r)", diameter_option: "直径 (d)", radius_label: "半径 (r)", diameter_label: "直径 (d)", arc_angle_label: "弧/扇形角度（度）— 可选", calculate_btn: "🔍 计算", results_title: "结果", radius_res: "半径", diameter_res: "直径", circumference_res: "周长", area_res: "面积", arc_length_res: "弧长", sector_area_res: "扇形面积", fraction_calc_title: "分数计算器", numerator1: "分子1", denominator1: "分母1", operation: "运算", op_add: "加法 (+)", op_sub: "减法 (−)", op_mul: "乘法 (×)", op_div: "除法 (÷)", numerator2: "分子2", denominator2: "分母2", solve_btn: "🔍 求解", result_label: "结果", decimal_label: "小数", visual_title: "可视化表示", visual_compare: "分数1（左条）对比分数2（右条）", fraction1_label: "分数1：", fraction2_label: "分数2：", result_visual_label: "结果可视化：", frac_word_title: "基于分数的距离问题", problem: "问题：", distance_problem: "一辆汽车以60公里/小时的速度行驶了全程的", of_journey: "，剩余部分", at_speed: "以80公里/小时行驶。总距离 =", time_first: "第一部分时间：", time_second: "第二部分时间：", total_time: "总时间：", avg_speed: "平均速度：", solve_distance_btn: "🔍 求解距离", tank_problem: "一个水箱装了", full_start: "满。如果加入", litres: "升，它变成", full_end: "满。", fraction_increase: "分数增加：", tank_capacity: "水箱总容量：", solve_tank_btn: "🔍 求解水箱", work_rate_title: "组合工作效率求解器", work_rate_desc: "两个工人/管道以不同的速率完成工作。求组合时间。", worker_a_time: "工人A：完成工作的时间（小时）", worker_b_time: "工人B：完成工作的时间（小时）", scenario: "场景", scenario_pipes: "两根管道填充游泳池", scenario_workers: "两个工人建墙", scenario_drain: "泵入+排水", scenario_three: "三个工人（添加C）", worker_c_time: "工人C：完成工作的时间（小时）", solve_work_btn: "🔍 求解工作速率", rate_a: "速率A", rate_b: "速率B", rate_c: "速率C", combined_time: "组合时间", rate_visual_title: "速率可视化", rate_visual_desc: "个人速率与组合速率的比较（每小时工作量）", steps_title: "逐步解决方案", classic_word_title: "经典工作效率问题", pipe_a_fills: "管道A在", hours: "小时内填满游泳池，管道B在", hours2: "小时内填满。一起需要多久？", answer: "答案：", worker_a_days: "工人A需要", days: "天，工人B需要", days2: "天。他们一起工作2天，然后A离开。B需要多长时间完成？", unit_label: "单位：", unit_litres: "升", unit_metres: "米", unit_sqmetres: "平方米", unit_items: "件", unit_jobs: "工作", steps_circle_title: "圆的计算步骤", steps_fraction_title: "分数计算步骤", steps_distance_title: "距离问题步骤", steps_tank_title: "水箱问题步骤", steps_workrate_title: "工作效率计算步骤", steps_classic_title: "经典问题步骤" },
+            ja: { main_title: "📐 幾何学＆分数ソルバースイート", main_subtitle: "インタラクティブ円幾何学エンジン · 分数ビジュアライザー · 作業レートソルバー", language_label: "言語：", tab_circle: "🔵 円の性質", tab_fraction: "🔢 分数ソルバー", tab_workrate: "⚡ 作業レート問題", circle_inputs_title: "円の入力", measurement_type: "測定タイプ", radius_option: "半径 (r)", diameter_option: "直径 (d)", radius_label: "半径 (r)", diameter_label: "直径 (d)", arc_angle_label: "弧/扇形の角度（度）— オプション", calculate_btn: "🔍 計算", results_title: "結果", radius_res: "半径", diameter_res: "直径", circumference_res: "円周", area_res: "面積", arc_length_res: "弧の長さ", sector_area_res: "扇形の面積", fraction_calc_title: "分数計算機", numerator1: "分子1", denominator1: "分母1", operation: "演算", op_add: "加算 (+)", op_sub: "減算 (−)", op_mul: "乗算 (×)", op_div: "除算 (÷)", numerator2: "分子2", denominator2: "分母2", solve_btn: "🔍 解く", result_label: "結果", decimal_label: "小数", visual_title: "視覚的表現", visual_compare: "分数1（左バー）対 分数2（右バー）", fraction1_label: "分数1：", fraction2_label: "分数2：", result_visual_label: "結果の可視化：", frac_word_title: "分数ベースの距離問題", problem: "問題：", distance_problem: "車が60 km/hで旅程の", of_journey: "を走行し、残りを", at_speed: "80 km/hで走行。総距離 =", time_first: "最初の部分の時間：", time_second: "2番目の部分の時間：", total_time: "合計時間：", avg_speed: "平均速度：", solve_distance_btn: "🔍 距離を解く", tank_problem: "タンクは", full_start: "満タンです。追加すると", litres: "リットルで、", full_end: "満タンになります。", fraction_increase: "分数の増加：", tank_capacity: "タンクの総容量：", solve_tank_btn: "🔍 タンクを解く", work_rate_title: "組み合わせ作業レートソルバー", work_rate_desc: "2人の作業者/パイプが異なるレートで仕事を完了します。組み合わせ時間を求めます。", worker_a_time: "作業者A：仕事を完了する時間（時間）", worker_b_time: "作業者B：仕事を完了する時間（時間）", scenario: "シナリオ", scenario_pipes: "2本のパイプがプールを満たす", scenario_workers: "2人の作業者が壁を建てる", scenario_drain: "ポンプ流入 + 排水", scenario_three: "3人の作業者（Cを追加）", worker_c_time: "作業者C：仕事を完了する時間（時間）", solve_work_btn: "🔍 作業レートを解く", rate_a: "レートA", rate_b: "レートB", rate_c: "レートC", combined_time: "組み合わせ時間", rate_visual_title: "レートの可視化", rate_visual_desc: "個々のレートと組み合わせレートの比較（1時間あたりの仕事量）", steps_title: "ステップバイステップの解決策", classic_word_title: "古典的な作業レート問題", pipe_a_fills: "パイプAはプールを", hours: "時間で満たし、パイプBは", hours2: "時間で満たす。一緒にどのくらいかかりますか？", answer: "回答：", worker_a_days: "作業者Aは", days: "日、作業者Bは", days2: "日かかります。彼らは2日間一緒に働き、その後Aが去ります。Bが終えるのにどのくらいかかりますか？", unit_label: "単位：", unit_litres: "リットル", unit_metres: "メートル", unit_sqmetres: "平方メートル", unit_items: "個", unit_jobs: "仕事", steps_circle_title: "円の計算手順", steps_fraction_title: "分数計算手順", steps_distance_title: "距離問題の手順", steps_tank_title: "タンク問題の手順", steps_workrate_title: "作業レート計算手順", steps_classic_title: "古典問題の手順" },
+            ko: { main_title: "📐 기하학 및 분수 솔버 스위트", main_subtitle: "대화형 원 기하학 엔진 · 분수 시각화 도구 · 작업 속도 솔버", language_label: "언어:", tab_circle: "🔵 원의 속성", tab_fraction: "🔢 분수 솔버", tab_workrate: "⚡ 작업 속도 문제", circle_inputs_title: "원 입력", measurement_type: "측정 유형", radius_option: "반지름 (r)", diameter_option: "지름 (d)", radius_label: "반지름 (r)", diameter_label: "지름 (d)", arc_angle_label: "호/부채꼴 각도 (도) — 선택 사항", calculate_btn: "🔍 계산", results_title: "결과", radius_res: "반지름", diameter_res: "지름", circumference_res: "둘레", area_res: "면적", arc_length_res: "호 길이", sector_area_res: "부채꼴 면적", fraction_calc_title: "분수 계산기", numerator1: "분자 1", denominator1: "분모 1", operation: "연산", op_add: "덧셈 (+)", op_sub: "뺄셈 (−)", op_mul: "곱셈 (×)", op_div: "나눗셈 (÷)", numerator2: "분자 2", denominator2: "분모 2", solve_btn: "🔍 풀기", result_label: "결과", decimal_label: "소수", visual_title: "시각적 표현", visual_compare: "분수 1 (왼쪽 막대) vs 분수 2 (오른쪽 막대)", fraction1_label: "분수 1:", fraction2_label: "분수 2:", result_visual_label: "결과 시각화:", frac_word_title: "분수 기반 거리 문제", problem: "문제:", distance_problem: "자동차가 60km/h로 여행의", of_journey: "을 주행하고 나머지를", at_speed: "80km/h로 주행합니다. 총 거리 =", time_first: "첫 부분 시간:", time_second: "두 번째 부분 시간:", total_time: "총 시간:", avg_speed: "평균 속도:", solve_distance_btn: "🔍 거리 풀기", tank_problem: "탱크가", full_start: "가득 찼습니다. 추가하면", litres: "리터가 되어", full_end: "가득 찹니다.", fraction_increase: "분수 증가:", tank_capacity: "탱크 총 용량:", solve_tank_btn: "🔍 탱크 풀기", work_rate_title: "결합 작업 속도 솔버", work_rate_desc: "두 작업자/파이프가 다른 속도로 작업을 완료합니다. 결합 시간을 구하세요.", worker_a_time: "작업자 A: 작업 완료 시간 (시간)", worker_b_time: "작업자 B: 작업 완료 시간 (시간)", scenario: "시나리오", scenario_pipes: "두 파이프가 수영장 채우기", scenario_workers: "두 작업자가 벽 쌓기", scenario_drain: "펌프 유입 + 배수", scenario_three: "세 작업자 (C 추가)", worker_c_time: "작업자 C: 작업 완료 시간 (시간)", solve_work_btn: "🔍 작업 속도 풀기", rate_a: "속도 A", rate_b: "속도 B", rate_c: "속도 C", combined_time: "결합 시간", rate_visual_title: "속도 시각화", rate_visual_desc: "개별 속도 대 결합 속도 비교 (시간당 작업량)", steps_title: "단계별 솔루션", classic_word_title: "고전적인 작업 속도 문제", pipe_a_fills: "파이프 A가 수영장을", hours: "시간 만에 채우고, 파이프 B가", hours2: "시간 만에 채웁니다. 함께 얼마나 걸립니까?", answer: "답변:", worker_a_days: "작업자 A는", days: "일, 작업자 B는", days2: "일 걸립니다. 그들은 2일 동안 함께 일한 후 A가 떠납니다. B가 끝내려면 얼마나 걸립니까?", unit_label: "단위:", unit_litres: "리터", unit_metres: "미터", unit_sqmetres: "제곱미터", unit_items: "개", unit_jobs: "작업", steps_circle_title: "원 계산 단계", steps_fraction_title: "분수 계산 단계", steps_distance_title: "거리 문제 단계", steps_tank_title: "탱크 문제 단계", steps_workrate_title: "작업 속도 계산 단계", steps_classic_title: "고전 문제 단계" },
+            ar: { main_title: "📐 مجموعة حلول الهندسة والكسور", main_subtitle: "محرك هندسة الدائرة التفاعلي · مُصور الكسور · حلال معدلات العمل", language_label: "اللغة:", tab_circle: "🔵 خصائص الدائرة", tab_fraction: "🔢 حلال الكسور", tab_workrate: "⚡ مسائل معدل العمل", circle_inputs_title: "مدخلات الدائرة", measurement_type: "نوع القياس", radius_option: "نصف القطر (r)", diameter_option: "القطر (d)", radius_label: "نصف القطر (r)", diameter_label: "القطر (d)", arc_angle_label: "زاوية القوس/القطاع (بالدرجات) — اختياري", calculate_btn: "🔍 احسب", results_title: "النتائج", radius_res: "نصف القطر", diameter_res: "القطر", circumference_res: "المحيط", area_res: "المساحة", arc_length_res: "طول القوس", sector_area_res: "مساحة القطاع", fraction_calc_title: "حاسبة الكسور", numerator1: "البسط 1", denominator1: "المقام 1", operation: "العملية", op_add: "جمع (+)", op_sub: "طرح (−)", op_mul: "ضرب (×)", op_div: "قسمة (÷)", numerator2: "البسط 2", denominator2: "المقام 2", solve_btn: "🔍 حل", result_label: "النتيجة", decimal_label: "عشري", visual_title: "تمثيل مرئي", visual_compare: "الكسر 1 (الشريط الأيسر) مقابل الكسر 2 (الشريط الأيمن)", fraction1_label: "الكسر 1:", fraction2_label: "الكسر 2:", result_visual_label: "تصور النتيجة:", frac_word_title: "مسائل المسافة القائمة على الكسور", problem: "المسألة:", distance_problem: "تسير سيارة", of_journey: "من الرحلة بسرعة 60 كم/ساعة، والجزء المتبقي", at_speed: "بسرعة 80 كم/ساعة. المسافة الإجمالية =", time_first: "وقت الجزء الأول:", time_second: "وقت الجزء الثاني:", total_time: "الوقت الإجمالي:", avg_speed: "السرعة المتوسطة:", solve_distance_btn: "🔍 حل المسافة", tank_problem: "خزان ممتلئ", full_start: "ممتلئ. إذا أضفت", litres: "لترًا، يصبح", full_end: "ممتلئًا.", fraction_increase: "زيادة الكسر:", tank_capacity: "سعة الخزان الإجمالية:", solve_tank_btn: "🔍 حل الخزان", work_rate_title: "حلال معدل العمل المدمج", work_rate_desc: "يكمل عاملان/أنبوبان عملاً بمعدلات مختلفة. أوجد الوقت المدمج.", worker_a_time: "العامل أ: الوقت لإكمال العمل (ساعات)", worker_b_time: "العامل ب: الوقت لإكمال العمل (ساعات)", scenario: "السيناريو", scenario_pipes: "أنبوبان يملآن حوض سباحة", scenario_workers: "عاملان يبنيان جدارًا", scenario_drain: "مضخة إدخال + تصريف", scenario_three: "ثلاثة عمال (أضف ج)", worker_c_time: "العامل ج: الوقت لإكمال العمل (ساعات)", solve_work_btn: "🔍 حل معدل العمل", rate_a: "معدل أ", rate_b: "معدل ب", rate_c: "معدل ج", combined_time: "الوقت المدمج", rate_visual_title: "تصور المعدلات", rate_visual_desc: "مقارنة المعدلات الفردية مقابل المعدل المدمج (أعمال في الساعة)", steps_title: "حل خطوة بخطوة", classic_word_title: "مسائل معدل العمل الكلاسيكية", pipe_a_fills: "الأنبوب أ يملأ حوض سباحة في", hours: "ساعات، والأنبوب ب يملأه في", hours2: "ساعات. كم من الوقت معًا؟", answer: "الإجابة:", worker_a_days: "العامل أ يستغرق", days: "أيام، والعامل ب يستغرق", days2: "أيام. يعملان معًا لمدة يومين، ثم يغادر أ. كم من الوقت يحتاج ب للإنهاء؟", unit_label: "الوحدة:", unit_litres: "لتر", unit_metres: "متر", unit_sqmetres: "متر مربع", unit_items: "قطعة", unit_jobs: "عمل", steps_circle_title: "خطوات حساب الدائرة", steps_fraction_title: "خطوات حساب الكسور", steps_distance_title: "خطوات مسألة المسافة", steps_tank_title: "خطوات مسألة الخزان", steps_workrate_title: "خطوات حساب معدل العمل", steps_classic_title: "خطوات المسائل الكلاسيكية" }
+        };
+
+        let currentLang = 'en';
+        let currentUnit = 'litres';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            updateCircleLabel();
+            calculateCircle();
+            calculateFraction();
+            calculateFractionDistance();
+            calculateTankProblem();
+            calculateWorkRate();
+            solveWordProblem1();
+            solveWordProblem2();
+        }
+
+        function updateCircleLabel() {
+            const measureType = document.getElementById('circle-measure-type').value;
+            const label = document.getElementById('circle-input-label');
+            if (measureType === 'radius') {
+                label.textContent = translations[currentLang].radius_label;
+            } else {
+                label.textContent = translations[currentLang].diameter_label;
+            }
+        }
+
+        // ==================== TAB SWITCHING ====================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ==================== CIRCLE ENGINE ====================
+        const circleMeasureType = document.getElementById('circle-measure-type');
+        const circleInputValue = document.getElementById('circle-input-value');
+        const circleAngle = document.getElementById('circle-angle');
+        const angleSlider = document.getElementById('angle-slider');
+        const angleDisplay = document.getElementById('angle-display');
+
+        circleMeasureType.addEventListener('change', () => { updateCircleLabel(); calculateCircle(); });
+        circleInputValue.addEventListener('input', calculateCircle);
+        circleAngle.addEventListener('input', () => { angleSlider.value = circleAngle.value; angleDisplay.textContent = circleAngle.value + '°'; calculateCircle(); });
+        angleSlider.addEventListener('input', () => { circleAngle.value = angleSlider.value; angleDisplay.textContent = angleSlider.value + '°'; calculateCircle(); });
+
+        function setAngle(deg) { circleAngle.value = deg; angleSlider.value = deg; angleDisplay.textContent = deg + '°'; calculateCircle(); }
+
+        function calculateCircle() {
+            const measureType = circleMeasureType.value;
+            const inputVal = parseFloat(circleInputValue.value);
+            const angle = parseFloat(circleAngle.value) || 0;
+            const lang = currentLang;
+            const units = lang === 'es' ? 'unidades' : 'units';
+            const sqUnits = lang === 'es' ? 'u²' : 'sq units';
+
+            if (!inputVal || inputVal <= 0) {
+                ['res-radius','res-diameter','res-circumference','res-area','res-arc','res-sector'].forEach(id => document.getElementById(id).textContent = '—');
+                document.getElementById('circle-steps').textContent = '';
+                return;
+            }
+            let radius = (measureType === 'radius') ? inputVal : inputVal / 2;
+            const diameter = radius * 2;
+            const circumference = 2 * Math.PI * radius;
+            const area = Math.PI * radius * radius;
+            const arcLength = (angle / 360) * circumference;
+            const sectorArea = (angle / 360) * area;
+
+            document.getElementById('res-radius').textContent = radius.toFixed(4);
+            document.getElementById('res-diameter').textContent = diameter.toFixed(4);
+            document.getElementById('res-circumference').textContent = circumference.toFixed(4) + ' ' + units;
+            document.getElementById('res-area').textContent = area.toFixed(4) + ' ' + sqUnits;
+            document.getElementById('res-arc').textContent = arcLength.toFixed(4) + ' ' + units;
+            document.getElementById('res-sector').textContent = sectorArea.toFixed(4) + ' ' + sqUnits;
+
+            const svgR = Math.min(100, Math.max(30, radius * 12));
+            document.getElementById('circle-main').setAttribute('r', svgR);
+            document.getElementById('radius-line').setAttribute('x2', 140 + svgR);
+            document.getElementById('label-r').setAttribute('x', 140 + svgR/2);
+            const angleRad = (angle * Math.PI) / 180;
+            const endX = 140 + svgR * Math.cos(angleRad);
+            const endY = 140 + svgR * Math.sin(angleRad);
+            const largeArcFlag = angle > 180 ? 1 : 0;
+            document.getElementById('sector-fill').setAttribute('d', `M 140 140 L 240 140 A ${svgR} ${svgR} 0 ${largeArcFlag} 1 ${endX} ${endY} Z`);
+            const angleLabel = document.getElementById('label-angle');
+            if (angle > 0 && angle < 360) {
+                const midAngle = (angle * Math.PI) / 360;
+                angleLabel.setAttribute('x', 140 + (svgR * 0.6) * Math.cos(midAngle));
+                angleLabel.setAttribute('y', 140 + (svgR * 0.6) * Math.sin(midAngle));
+                angleLabel.textContent = angle + '°';
+                angleLabel.style.display = 'block';
+            } else {
+                angleLabel.style.display = 'none';
+            }
+
+            document.getElementById('formula-circle').textContent = 
+                `A = πr² = π(${radius.toFixed(2)})² = ${area.toFixed(4)} · C = 2πr = 2π(${radius.toFixed(2)}) = ${circumference.toFixed(4)}`;
+
+            const steps = [];
+            steps.push(`1. ${lang === 'es' ? 'Tipo de medida' : 'Measurement type'}: ${measureType}`);
+            if (measureType === 'diameter') {
+                steps.push(`   ${lang === 'es' ? 'Radio = Diámetro / 2' : 'Radius = Diameter / 2'} = ${inputVal} / 2 = ${radius.toFixed(4)}`);
+            } else {
+                steps.push(`   ${lang === 'es' ? 'Radio dado' : 'Given radius'} = ${radius.toFixed(4)}`);
+            }
+            steps.push(`2. ${lang === 'es' ? 'Diámetro' : 'Diameter'} = 2 × radio = 2 × ${radius.toFixed(4)} = ${diameter.toFixed(4)}`);
+            steps.push(`3. ${lang === 'es' ? 'Circunferencia' : 'Circumference'} C = 2πr = 2 × π × ${radius.toFixed(4)} = ${circumference.toFixed(4)}`);
+            steps.push(`4. ${lang === 'es' ? 'Área' : 'Area'} A = πr² = π × (${radius.toFixed(4)})² = ${area.toFixed(4)}`);
+            steps.push(`5. ${lang === 'es' ? 'Ángulo del arco/sector' : 'Arc/sector angle'} θ = ${angle}°`);
+            steps.push(`6. ${lang === 'es' ? 'Longitud de arco' : 'Arc length'} = (θ/360) × C = (${angle}/360) × ${circumference.toFixed(4)} = ${arcLength.toFixed(4)}`);
+            steps.push(`7. ${lang === 'es' ? 'Área del sector' : 'Sector area'} = (θ/360) × A = (${angle}/360) × ${area.toFixed(4)} = ${sectorArea.toFixed(4)}`);
+            document.getElementById('circle-steps').textContent = steps.join('\n');
+        }
+
+        // ==================== FRACTION SOLVER ====================
+        function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+        function simplifyFraction(num, den) {
+            if (den < 0) { num = -num; den = -den; }
+            const g = gcd(num, den);
+            return [num / g, den / g];
+        }
+
+        function calculateFraction() {
+            const n1 = parseFloat(document.getElementById('frac-n1').value) || 0;
+            const d1 = parseFloat(document.getElementById('frac-d1').value) || 1;
+            const n2 = parseFloat(document.getElementById('frac-n2').value) || 0;
+            const d2 = parseFloat(document.getElementById('frac-d2').value) || 1;
+            const op = document.getElementById('frac-op').value;
+            const lang = currentLang;
+
+            if (d1 === 0 || d2 === 0) {
+                document.getElementById('frac-result').textContent = lang === 'es' ? 'Error: denominador 0' : 'Error: denominator 0';
+                document.getElementById('frac-decimal').textContent = '—';
+                document.getElementById('frac-steps').textContent = '';
+                return;
+            }
+
+            let num, den;
+            let steps = [];
+            const f1 = `${n1}/${d1}`;
+            const f2 = `${n2}/${d2}`;
+            steps.push(`${lang === 'es' ? 'Fracción 1' : 'Fraction 1'} = ${f1}`);
+            steps.push(`${lang === 'es' ? 'Fracción 2' : 'Fraction 2'} = ${f2}`);
+            steps.push(`${lang === 'es' ? 'Operación' : 'Operation'}: ${op}`);
+
+            switch (op) {
+                case '+':
+                    num = n1 * d2 + n2 * d1;
+                    den = d1 * d2;
+                    steps.push(`${lang === 'es' ? 'Suma' : 'Addition'}: (${n1}×${d2} + ${n2}×${d1}) / (${d1}×${d2})`);
+                    steps.push(`= (${n1*d2} + ${n2*d1}) / ${d1*d2} = ${num} / ${den}`);
+                    break;
+                case '-':
+                    num = n1 * d2 - n2 * d1;
+                    den = d1 * d2;
+                    steps.push(`${lang === 'es' ? 'Resta' : 'Subtraction'}: (${n1}×${d2} - ${n2}×${d1}) / (${d1}×${d2})`);
+                    steps.push(`= (${n1*d2} - ${n2*d1}) / ${d1*d2} = ${num} / ${den}`);
+                    break;
+                case '×':
+                    num = n1 * n2;
+                    den = d1 * d2;
+                    steps.push(`${lang === 'es' ? 'Multiplicación' : 'Multiplication'}: (${n1}×${n2}) / (${d1}×${d2})`);
+                    steps.push(`= ${n1*n2} / ${d1*d2} = ${num} / ${den}`);
+                    break;
+                case '÷':
+                    num = n1 * d2;
+                    den = d1 * n2;
+                    steps.push(`${lang === 'es' ? 'División' : 'Division'}: (${n1}×${d2}) / (${d1}×${n2})`);
+                    steps.push(`= ${n1*d2} / ${d1*n2} = ${num} / ${den}`);
+                    if (den === 0) {
+                        document.getElementById('frac-result').textContent = lang === 'es' ? 'Error: división por 0' : 'Error: division by 0';
+                        document.getElementById('frac-decimal').textContent = '—';
+                        document.getElementById('frac-steps').textContent = steps.join('\n');
+                        return;
+                    }
+                    break;
+            }
+
+            const [simpNum, simpDen] = simplifyFraction(num, den);
+            steps.push(`${lang === 'es' ? 'Simplificación' : 'Simplification'}: MCD(${num}, ${den}) = ${gcd(num, den)}`);
+            steps.push(`→ ${simpNum}/${simpDen}`);
+
+            const decimal = simpNum / simpDen;
+            let resultStr;
+            if (simpDen === 1) resultStr = `${simpNum}`;
+            else if (Math.abs(simpNum) > simpDen) {
+                const whole = Math.trunc(simpNum / simpDen);
+                const rem = Math.abs(simpNum % simpDen);
+                resultStr = rem === 0 ? `${whole}` : `${whole} ${rem}/${simpDen}`;
+            } else {
+                resultStr = `${simpNum}/${simpDen}`;
+            }
+            document.getElementById('frac-result').textContent = resultStr;
+            document.getElementById('frac-decimal').textContent = decimal.toFixed(6);
+            document.getElementById('frac-steps').textContent = steps.join('\n');
+
+            const pct1 = Math.min(Math.abs(n1/d1)*100, 100);
+            const pct2 = Math.min(Math.abs(n2/d2)*100, 100);
+            const pctResult = Math.min(Math.abs(simpNum/simpDen)*100, 100);
+            document.getElementById('frac1-label').textContent = f1;
+            document.getElementById('frac2-label').textContent = f2;
+            document.getElementById('frac1-bar').innerHTML = `<div class="filled" style="width:${pct1}%;">${pct1.toFixed(0)}%</div><div class="empty">${(100-pct1).toFixed(0)}%</div>`;
+            document.getElementById('frac2-bar').innerHTML = `<div class="filled" style="width:${pct2}%;">${pct2.toFixed(0)}%</div><div class="empty">${(100-pct2).toFixed(0)}%</div>`;
+            document.getElementById('frac-result-bar').innerHTML = `<div class="filled" style="width:${pctResult}%;">${resultStr}</div><div class="empty">${(100-pctResult).toFixed(0)}%</div>`;
+        }
+
+        // ==================== FRACTION WORD PROBLEMS ====================
+        function calculateFractionDistance() {
+            const totalDist = parseFloat(document.getElementById('fp-total-dist').value) || 0;
+            const lang = currentLang;
+            const hrs = 'hrs';
+            if (totalDist <= 0) {
+                ['fp-time1','fp-time2','fp-total-time','fp-avg-speed'].forEach(id => document.getElementById(id).textContent = '—');
+                document.getElementById('frac-word-steps').textContent = '';
+                return;
+            }
+            const dist1 = totalDist * 3/4;
+            const dist2 = totalDist * 1/4;
+            const time1 = dist1 / 60;
+            const time2 = dist2 / 80;
+            const totalTime = time1 + time2;
+            const avgSpeed = totalDist / totalTime;
+
+            document.getElementById('fp-time1').textContent = time1.toFixed(2) + ' ' + hrs;
+            document.getElementById('fp-time2').textContent = time2.toFixed(2) + ' ' + hrs;
+            document.getElementById('fp-total-time').textContent = totalTime.toFixed(2) + ' ' + hrs;
+            document.getElementById('fp-avg-speed').textContent = avgSpeed.toFixed(2) + ' km/h';
+
+            const steps = [];
+            steps.push(`1. ${lang === 'es' ? 'Distancia total' : 'Total distance'} = ${totalDist} km`);
+            steps.push(`2. ${lang === 'es' ? 'Primera parte' : 'First part'}: 3/4 × ${totalDist} = ${dist1} km @ 60 km/h → tiempo = ${dist1}/60 = ${time1.toFixed(4)} h`);
+            steps.push(`3. ${lang === 'es' ? 'Segunda parte' : 'Second part'}: 1/4 × ${totalDist} = ${dist2} km @ 80 km/h → tiempo = ${dist2}/80 = ${time2.toFixed(4)} h`);
+            steps.push(`4. ${lang === 'es' ? 'Tiempo total' : 'Total time'} = ${time1.toFixed(4)} + ${time2.toFixed(4)} = ${totalTime.toFixed(4)} h`);
+            steps.push(`5. ${lang === 'es' ? 'Velocidad media' : 'Average speed'} = ${totalDist} / ${totalTime.toFixed(4)} = ${avgSpeed.toFixed(2)} km/h`);
+            document.getElementById('frac-word-steps').textContent = steps.join('\n');
+        }
+
+        function calculateTankProblem() {
+            const added = parseFloat(document.getElementById('fp-add-litres').value) || 0;
+            const lang = currentLang;
+            const incFrac = 3/5 - 2/5;
+            const capacity = added / incFrac;
+
+            document.getElementById('fp-inc-frac').textContent = `${incFrac} (${(incFrac*100).toFixed(0)}%)`;
+            document.getElementById('fp-tank-cap').textContent = capacity.toFixed(2) + ' L';
+
+            const steps = [];
+            steps.push(`1. ${lang === 'es' ? 'Fracción inicial' : 'Initial fraction'} = 2/5, ${lang === 'es' ? 'fracción final' : 'final fraction'} = 3/5`);
+            steps.push(`2. ${lang === 'es' ? 'Aumento de fracción' : 'Fraction increase'} = 3/5 - 2/5 = 1/5`);
+            steps.push(`3. ${lang === 'es' ? 'Se añaden' : 'Added'} = ${added} L, que corresponde a 1/5 de la capacidad total`);
+            steps.push(`4. ${lang === 'es' ? 'Capacidad total' : 'Total capacity'} = ${added} / (1/5) = ${added} × 5 = ${capacity.toFixed(2)} L`);
+            document.getElementById('frac-word-steps').textContent = steps.join('\n');
+        }
+
+        // ==================== WORK-RATE ====================
+        const wrScenario = document.getElementById('wr-scenario');
+        const wrCGroup = document.getElementById('wr-c-group');
+        const wrRateCItem = document.getElementById('wr-rate-c-item');
+        const wrRateC = document.getElementById('wr-rate-c');
+        const workUnitSelect = document.getElementById('work-unit');
+
+        workUnitSelect.addEventListener('change', () => {
+            currentUnit = workUnitSelect.value;
+            calculateWorkRate();
+        });
+
+        wrScenario.addEventListener('change', () => {
+            if (wrScenario.value === '3-workers') {
+                wrCGroup.style.display = 'block';
+                wrRateCItem.style.display = 'block';
+            } else {
+                wrCGroup.style.display = 'none';
+                wrRateCItem.style.display = 'none';
+            }
+            calculateWorkRate();
+        });
+
+        function getUnitLabel() {
+            const lang = currentLang;
+            const unit = currentUnit;
+            const unitTranslations = {
+                litres: translations[lang].unit_litres,
+                metres: translations[lang].unit_metres,
+                sqmetres: translations[lang].unit_sqmetres,
+                items: translations[lang].unit_items,
+                jobs: translations[lang].unit_jobs
+            };
+            return unitTranslations[unit] || unit;
+        }
+
+        function calculateWorkRate() {
+            const a = parseFloat(document.getElementById('wr-a').value);
+            const b = parseFloat(document.getElementById('wr-b').value);
+            const scenario = wrScenario.value;
+            const lang = currentLang;
+            const unitLabel = getUnitLabel();
+            const rateUnit = unitLabel + (lang === 'es' ? '/hr' : '/hr'); // simplify: per hour
+
+            if (!a || a <= 0 || !b || b <= 0) {
+                document.getElementById('wr-rate-a').textContent = '—';
+                document.getElementById('wr-rate-b').textContent = '—';
+                document.getElementById('wr-combined').textContent = '—';
+                document.getElementById('wr-steps').textContent = '';
+                return;
+            }
+
+            const rateA = 1 / a;
+            const rateB = 1 / b;
+            let combinedRate = rateA + rateB;
+            let combinedTime;
+            let steps = [];
+
+            steps.push(`1. ${lang === 'es' ? 'Ritmo de A' : 'Rate A'} = 1 / ${a} = ${rateA.toFixed(4)} ${rateUnit}`);
+            steps.push(`2. ${lang === 'es' ? 'Ritmo de B' : 'Rate B'} = 1 / ${b} = ${rateB.toFixed(4)} ${rateUnit}`);
+
+            let rateCVal = 0;
+            if (scenario === '3-workers') {
+                const c = parseFloat(document.getElementById('wr-c').value);
+                if (c && c > 0) {
+                    rateCVal = 1 / c;
+                    steps.push(`3. ${lang === 'es' ? 'Ritmo de C' : 'Rate C'} = 1 / ${c} = ${rateCVal.toFixed(4)} ${rateUnit}`);
+                    combinedRate += rateCVal;
+                }
+            }
+
+            if (scenario === 'pump-drain') {
+                combinedRate = rateA - rateB;
+                steps.push(`3. ${lang === 'es' ? 'Ritmo neto (A llena, B drena)' : 'Net rate (A fills, B drains)'} = ${rateA.toFixed(4)} - ${rateB.toFixed(4)} = ${combinedRate.toFixed(4)} ${rateUnit}`);
+                if (combinedRate <= 0) {
+                    document.getElementById('wr-rate-a').textContent = rateA.toFixed(4) + ' ' + rateUnit;
+                    document.getElementById('wr-rate-b').textContent = rateB.toFixed(4) + ' ' + rateUnit + (lang === 'es' ? ' (drenando)' : ' (draining)');
+                    document.getElementById('wr-combined').textContent = lang === 'es' ? 'Nunca se llena' : 'Never fills';
+                    const note = lang === 'es' ? 'El ritmo de drenaje ≥ ritmo de llenado — ¡la piscina nunca se llena!' : 'Drain rate ≥ fill rate — pool never fills!';
+                    document.getElementById('wr-note').textContent = note;
+                    drawWorkRateChart([rateA, rateB, 0], ['A (fill)', 'B (drain)', 'Net']);
+                    document.getElementById('wr-steps').textContent = steps.join('\n');
+                    return;
+                }
+            }
+
+            combinedTime = 1 / combinedRate;
+            steps.push(`${lang === 'es' ? 'Ritmo combinado' : 'Combined rate'} = 1 / T = ${combinedRate.toFixed(4)} ${rateUnit}`);
+            steps.push(`T = 1 / ${combinedRate.toFixed(4)} = ${combinedTime.toFixed(3)} hrs`);
+
+            document.getElementById('wr-rate-a').textContent = rateA.toFixed(4) + ' ' + rateUnit;
+            document.getElementById('wr-rate-b').textContent = rateB.toFixed(4) + ' ' + rateUnit;
+            if (scenario === '3-workers' && rateCVal > 0) {
+                document.getElementById('wr-rate-c').textContent = rateCVal.toFixed(4) + ' ' + rateUnit;
+            }
+            document.getElementById('wr-combined').textContent = combinedTime.toFixed(3) + ' hrs';
+            const note = lang === 'es' ? 
+                `Ritmo combinado: ${combinedRate.toFixed(4)} ${rateUnit} — aproximadamente ${(combinedRate/Math.max(rateA,rateB)).toFixed(1)}× más rápido que un solo trabajador` :
+                `Combined rate: ${combinedRate.toFixed(4)} ${rateUnit} — about ${(combinedRate/Math.max(rateA,rateB)).toFixed(1)}× faster than a single worker`;
+            document.getElementById('wr-note').textContent = note;
+            document.getElementById('wr-steps').textContent = steps.join('\n');
+
+            const ratesArray = [rateA, rateB].concat(rateCVal > 0 ? [rateCVal] : []);
+            const labelsArray = ['A', 'B'].concat(rateCVal > 0 ? ['C'] : []);
+            drawWorkRateChart(ratesArray, labelsArray, combinedRate);
+        }
+
+        function drawWorkRateChart(rates, labels, combinedRate) {
+            const svg = document.getElementById('wr-svg');
+            const w = 400, h = 220, padding = 50, barWidth = 45, gap = 30;
+            const maxRate = Math.max(...rates, combinedRate) * 1.2 || 1;
+            let svgContent = `
+                <line x1="${padding-10}" y1="${h-30}" x2="${w-10}" y2="${h-30}" stroke="#2a2a4a" stroke-width="1.5"/>
+                <line x1="${padding-10}" y1="${h-30}" x2="${padding-10}" y2="${10}" stroke="#2a2a4a" stroke-width="1.5"/>
+            `;
+            for (let i = 0; i <= 4; i++) {
+                const yVal = (maxRate * i) / 4;
+                const yPos = h - 30 - (yVal / maxRate) * (h - 60);
+                svgContent += `<text x="${padding-15}" y="${yPos+4}" fill="#666" font-size="9" text-anchor="end">${yVal.toFixed(2)}</text>`;
+                svgContent += `<line x1="${padding-10}" y1="${yPos}" x2="${w-10}" y2="${yPos}" stroke="#1a1a2e" stroke-width="0.5" stroke-dasharray="3,3"/>`;
+            }
+            const totalBars = rates.length + 1;
+            const totalWidth = totalBars * barWidth + (totalBars - 1) * gap;
+            let startX = (w - totalWidth) / 2 + padding - 20;
+            const colors = ['#e94560', '#53d8fb', '#4ecca3', '#f5a623'];
+            rates.forEach((rate, i) => {
+                const barH = (rate / maxRate) * (h - 60);
+                const x = startX + i * (barWidth + gap);
+                const y = h - 30 - barH;
+                svgContent += `
+                    <rect x="${x}" y="${y}" width="${barWidth}" height="${barH}" rx="4" fill="${colors[i%colors.length]}" opacity="0.85"/>
+                    <text x="${x + barWidth/2}" y="${h-38}" fill="#ddd" font-size="11" text-anchor="middle">${labels[i]}</text>
+                    <text x="${x + barWidth/2}" y="${y-5}" fill="${colors[i%colors.length]}" font-size="10" text-anchor="middle">${rate.toFixed(3)}</text>
+                `;
+            });
+            const barH = (combinedRate / maxRate) * (h - 60);
+            const x = startX + rates.length * (barWidth + gap);
+            const y = h - 30 - barH;
+            svgContent += `
+                <rect x="${x}" y="${y}" width="${barWidth}" height="${barH}" rx="4" fill="#fff" opacity="0.9"/>
+                <text x="${x + barWidth/2}" y="${h-38}" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">${currentLang === 'es' ? 'Combinado' : 'Combined'}</text>
+                <text x="${x + barWidth/2}" y="${y-5}" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">${combinedRate.toFixed(3)}</text>
+            `;
+            svgContent += `<text x="${w/2}" y="15" fill="#aaa" font-size="11" text-anchor="middle" font-weight="600">${currentLang === 'es' ? 'Ritmos de trabajo (por hora)' : 'Work Rates (per hour)'}</text>`;
+            svg.innerHTML = svgContent;
+        }
+
+        // ==================== CLASSIC WORD PROBLEMS ====================
+        function solveWordProblem1() {
+            const a = parseFloat(document.getElementById('wp1-a').value) || 0;
+            const b = parseFloat(document.getElementById('wp1-b').value) || 0;
+            const lang = currentLang;
+            if (a <= 0 || b <= 0) { document.getElementById('wp1-answer').textContent = '—'; return; }
+            const combined = (a * b) / (a + b);
+            const hours = Math.floor(combined);
+            const minutes = Math.round((combined - hours) * 60);
+            document.getElementById('wp1-answer').textContent = `${combined.toFixed(2)} ${lang === 'es' ? 'horas' : 'hours'} (${hours} ${lang === 'es' ? 'h' : 'hrs'} ${minutes} min)`;
+
+            const steps = [];
+            steps.push(`1. ${lang === 'es' ? 'Ritmo de A' : 'Rate A'} = 1/${a}`);
+            steps.push(`2. ${lang === 'es' ? 'Ritmo de B' : 'Rate B'} = 1/${b}`);
+            steps.push(`3. ${lang === 'es' ? 'Ritmo combinado' : 'Combined rate'} = 1/${a} + 1/${b} = ${(1/a + 1/b).toFixed(4)}`);
+            steps.push(`4. ${lang === 'es' ? 'Tiempo combinado' : 'Combined time'} = 1 / (${(1/a + 1/b).toFixed(4)}) = ${combined.toFixed(4)} ${lang === 'es' ? 'horas' : 'hours'}`);
+            document.getElementById('wp-steps').textContent = steps.join('\n');
+        }
+
+        function solveWordProblem2() {
+            const a = parseFloat(document.getElementById('wp2-a').value) || 0;
+            const b = parseFloat(document.getElementById('wp2-b').value) || 0;
+            const lang = currentLang;
+            if (a <= 0 || b <= 0) { document.getElementById('wp2-answer').textContent = '—'; return; }
+            const together2days = 2 * (1/a + 1/b);
+            const remaining = 1 - together2days;
+            let timeB;
+            if (remaining <= 0) {
+                document.getElementById('wp2-answer').textContent = lang === 'es' ? '¡Ya terminaron durante los 2 días!' : 'Already finished during the 2 days!';
+                timeB = 0;
+            } else {
+                timeB = remaining / (1/b);
+                document.getElementById('wp2-answer').textContent = `${timeB.toFixed(2)} ${lang === 'es' ? 'días más para B' : 'more days for B'}`;
+            }
+
+            const steps = [];
+            steps.push(`1. ${lang === 'es' ? 'Ritmo A' : 'Rate A'} = 1/${a}, ${lang === 'es' ? 'Ritmo B' : 'Rate B'} = 1/${b}`);
+            steps.push(`2. ${lang === 'es' ? 'Trabajo hecho en 2 días juntos' : 'Work done in 2 days together'} = 2 × (1/${a} + 1/${b}) = ${together2days.toFixed(4)}`);
+            steps.push(`3. ${lang === 'es' ? 'Trabajo restante' : 'Remaining work'} = 1 - ${together2days.toFixed(4)} = ${remaining.toFixed(4)}`);
+            if (remaining <= 0) {
+                steps.push(`4. ${lang === 'es' ? 'No queda trabajo' : 'No work left'} → ${lang === 'es' ? 'Terminado' : 'Finished'}`);
+            } else {
+                steps.push(`4. ${lang === 'es' ? 'Tiempo para B' : 'Time for B'} = ${remaining.toFixed(4)} / (1/${b}) = ${timeB.toFixed(2)} ${lang === 'es' ? 'días' : 'days'}`);
+            }
+            document.getElementById('wp-steps').textContent = steps.join('\n');
+        }
+
+        // ==================== INITIALIZATION ====================
+        function init() {
+            calculateCircle();
+            calculateFraction();
+            calculateFractionDistance();
+            calculateTankProblem();
+            calculateWorkRate();
+            solveWordProblem1();
+            solveWordProblem2();
+        }
+
+        document.querySelectorAll('#frac-n1, #frac-d1, #frac-n2, #frac-d2, #frac-op').forEach(el => {
+            el.addEventListener('input', calculateFraction);
+            el.addEventListener('change', calculateFraction);
+        });
+        document.querySelectorAll('#wr-a, #wr-b, #wr-c').forEach(el => el.addEventListener('input', calculateWorkRate));
+        document.getElementById('fp-total-dist').addEventListener('input', calculateFractionDistance);
+        document.getElementById('fp-add-litres').addEventListener('input', calculateTankProblem);
+        document.getElementById('wp1-a').addEventListener('input', solveWordProblem1);
+        document.getElementById('wp1-b').addEventListener('input', solveWordProblem1);
+        document.getElementById('wp2-a').addEventListener('input', solveWordProblem2);
+        document.getElementById('wp2-b').addEventListener('input', solveWordProblem2);
+
+        init();
+    </script>
+</body>
+</html>
